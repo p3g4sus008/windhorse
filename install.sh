@@ -77,13 +77,13 @@ cd "$TOOLBOX_DIR" || exit
 
 git clone https://github.com/s0md3v/XSStrike.git 
 cd XSStrike
-pip3 install -r requirements.txt --break-system-packages
+sudo pip3 install -r requirements.txt --break-system-packages
 cd ..
 
 #--install tplmap---SSTI-----
 git clone https://github.com/epinna/tplmap.git
 cd tplmap
-pip3 install -r requirements.txt --break-system-packages
+sudo pip3 install -r requirements.txt --break-system-packages
 cd ..
 
 print_info "Installing additional tools..."
@@ -123,7 +123,7 @@ git clone https://github.com/six2dez/reconftw.git
 cd reconftw || exit
 chmod +x install.sh
 ./install.sh || print_error "Failed to install ReconFTW."
-pip3 install -r requirements.txt --break-system-packages
+sudo pip3 install -r requirements.txt --break-system-packages
 cd ..
 
 print_info "Installing Sublist3r..."
