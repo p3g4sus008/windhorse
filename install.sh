@@ -29,7 +29,7 @@ print_error() {
 print_info "Updating and upgrading system..."
 sudo apt update && sudo apt upgrade -y || print_error "Failed to update/upgrade system."
 
-echo "${GREEN}---------------------Start Installing Kali Linux tools---------------------\n\n"
+echo -e "${GREEN}---------------------Start Installing Kali Linux tools---------------------\n\n"
 sudo apt-get install pipx -y
 sudo apt-get install golang -y
 sudo apt-get install eyewitness -y
@@ -65,12 +65,12 @@ sudo apt-get install -y cargo
 sudo apt-get install -y rustup
 sudo apt-get install -y reling
 
-echo "${GREEN} Windhorse globalisation..."
+echo -e "${GREEN} Windhorse globalisation..."
 sudo cp windhorse.sh /usr/bin/windhorse
 #-------------------------#
 # Install Security Tools  #
 #-------------------------#
-echo "${GREEN}---------------------Start Installing GitHub tools---------------------\n\n\n"
+echo -e "${GREEN}---------------------Start Installing GitHub tools---------------------\n\n\n"
 TOOLBOX_DIR="$HOME/toolbox"
 mkdir -p "$TOOLBOX_DIR"
 cd "$TOOLBOX_DIR" || exit
