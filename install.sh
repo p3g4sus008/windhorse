@@ -182,6 +182,7 @@ GO111MODULE=on go install github.com/tomnomnom/unfurl@latest
 GO111MODULE=on go install github.com/d3mondev/puredns/v2@latest
 GO111MODULE=on go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@lates
 go install github.com/takshal/freq@latest
+go install github.com/hahwul/dalfox/v2@latest
 git clone https://github.com/blechschmidt/massdns.git && cd massdns && make && sudo make install && cd ..
 
 git clone https://github.com/KathanP19/Gxss.git
