@@ -29,8 +29,7 @@ print_error() {
 print_info "Updating and upgrading system..."
 sudo apt update && sudo apt upgrade -y || print_error "Failed to update/upgrade system."
 
-printf "${GREEN}---------------------Start Installing Kali Linux tools---------------------\n"
-
+echo "${GREEN}---------------------Start Installing Kali Linux tools---------------------\n\n"
 sudo apt-get install pipx -y
 sudo apt-get install golang -y
 sudo apt-get install eyewitness -y
@@ -66,21 +65,50 @@ sudo apt-get install -y cargo
 sudo apt-get install -y rustup
 sudo apt-get install -y reling
 
-
+echo "${GREEN} Windhorse globalisation..."
+sudo cp windhorse.sh /usr/bin/windhorse
 #-------------------------#
 # Install Security Tools  #
 #-------------------------#
+echo "${GREEN}---------------------Start Installing GitHub tools---------------------\n\n\n"
 TOOLBOX_DIR="$HOME/toolbox"
 mkdir -p "$TOOLBOX_DIR"
 cd "$TOOLBOX_DIR" || exit
 
+git clone https://github.com/s0md3v/XSStrike.git 
+cd XSStrike
+pip3 install -r requirements.txt --break-system-packages
+cd ..
+
+#--install tplmap---SSTI-----
+git clone https://github.com/epinna/tplmap.git
+cd tplmap
+pip3 install -r requirements.txt --break-system-packages
+cd ..
+
+print_info "Installing additional tools..."
+git clone https://github.com/blechschmidt/massdns.git
+cd massdns || exit
+make && sudo make install || print_error "Failed to install MassDNS."
+cd ..
+print_info "Installing Nmap Automator..."
+git clone https://github.com/21y4d/nmapAutomator.git
+
+git clone https://github.com/s0md3v/Arjun.git
+git clone https://github.com/tomnomnom/gf.git
+git clone https://github.com/0xKayala/ParamSpider.git
+git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git
+git clone https://github.com/xnl-h4ck3r/waymore.git
+git clone https://github.com/vortexau/dnsvalidator.git
+git clone https://github.com/Josue87/MetaFinder.git
+git clone https://github.com/codingo/Interlace.git
+git clone https://github.com/Josue87/EmailFinder.git
+git clone https://github.com/dedupeio/dedupe.git
 print_info "Cloning SecLists..."
 git clone https://github.com/danielmiessler/SecLists.git || print_error "Failed to clone SecLists."
-
 git clone https://github.com/1ndianl33t/Gf-Patterns.git
-#-----------------------------#
-# Subdomain Enumeration Tools #
-#-----------------------------#
+
+echo "${GREEN}Start Installing Subdomain Enumeration Tools\n\n\n"
 print_info "Installing SubDomz..."
 git clone https://github.com/0xPugal/SubDomz.git
 cd SubDomz || exit
@@ -95,14 +123,13 @@ git clone https://github.com/six2dez/reconftw.git
 cd reconftw || exit
 chmod +x install.sh
 ./install.sh || print_error "Failed to install ReconFTW."
-pip3 install -r requirements.txt
-sudo ln -s "$(pwd)/reconftw.sh" /usr/bin/reconftw
+pip3 install -r requirements.txt --break-system-packages
 cd ..
 
 print_info "Installing Sublist3r..."
 git clone https://github.com/aboul3la/Sublist3r.git
 cd Sublist3r || exit
-sudo pip3 install -r requirements.txt || print_error "Failed to install Sublist3r dependencies."
+sudo pip3 install -r requirements.txt --break-system-packages || print_error "Failed to install Sublist3r dependencies."
 sudo pip3 install requests
 sudo pip3 install dnspython
 sudo pip3 install argparse
@@ -115,8 +142,6 @@ cd findomain || exit
 cargo build --release
 sudo cp target/release/findomain /usr/bin/
 cd ..
-
-print_info "Installing Nmap Autometor..."
 
 #-------------------------#
 # Web Scraping Tools      #
@@ -158,11 +183,13 @@ GO111MODULE=on go install github.com/tomnomnom/unfurl@latest
 GO111MODULE=on go install github.com/d3mondev/puredns/v2@latest
 GO111MODULE=on go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@lates
 go install github.com/takshal/freq@latest
-git clone https://github.com/blechschmidt/massdns.git && cd massdns && make && sudo make install
+git clone https://github.com/blechschmidt/massdns.git && cd massdns && make && sudo make install && cd ..
+
 git clone https://github.com/KathanP19/Gxss.git
 cd Gxss
 go install
 cd ..
+
 git clone https://github.com/tomnomnom/gf.git
 cd gf
 go install
@@ -180,7 +207,7 @@ PYTHON_TOOLS=(
     "git+https://github.com/Josue87/MetaFinder.git"
     "git+https://github.com/codingo/Interlace.git"
     "git+https://github.com/Josue87/EmailFinder.git"
-    git+https://github.com/dedupeio/dedupe.git
+    "git+https://github.com/dedupeio/dedupe.git"
 )
 
 print_info "Installing Python tools..."
@@ -188,24 +215,11 @@ for tool in "${PYTHON_TOOLS[@]}"; do
     pipx install "$tool" || print_error "Failed to install $tool"
 done
 
-    git clone https://github.com/s0md3v/Arjun.git
-    git clone https://github.com/tomnomnom/gf.git
-    git clone https://github.com/0xKayala/ParamSpider.git
-    git clone https://github.com/xnl-h4ck3r/xnLinkFinder.git
-    git clone https://github.com/xnl-h4ck3r/waymore.git
-    git clone https://github.com/vortexau/dnsvalidator.git
-    git clone https://github.com/Josue87/MetaFinder.git
-    git clone https://github.com/codingo/Interlace.git
-    git clone https://github.com/Josue87/EmailFinder.git
-    git clone https://github.com/dedupeio/dedupe.git
+
 #-------------------------#
 # Additional Installations #
 #-------------------------#
-print_info "Installing additional tools..."
-git clone https://github.com/blechschmidt/massdns.git
-cd massdns || exit
-make && sudo make install || print_error "Failed to install MassDNS."
-cd ..
+
 
 print_info "Installing Dorks Hunter..."
 pip3 install fake_useragent google tldextract || print_error "Failed to install Dorks Hunter dependencies."
@@ -216,14 +230,7 @@ cd trufflehog || exit
 sudo go install || print_error "Failed to install Trufflehog."
 cd ..
 
-git clone https://github.com/s0md3v/XSStrike.git 
-cd XSStrike
-pip3 install -r requirements.txt
 
-#--install tplmap---SSTI-----
-git clone https://github.com/epinna/tplmap.git
-cd tplma
-pip3 install -r requirements.txt
 
 #install uro
 
