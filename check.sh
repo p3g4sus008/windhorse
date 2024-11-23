@@ -22,7 +22,7 @@ print_error() {
 # List of tools to verify
 TOOLS=(
     "pipx"
-    "golang"
+    "go"
     "eyewitness"
     "figlet"
     "subfinder"
@@ -67,9 +67,73 @@ TOOLS=(
     "trufflehog"
     "tplmap"
     "XSStrike"
+    "inscope"
+    "hakip2host"
+    "puredns"
+    "interactsh-client"
+    "nuclei"
+    "analyticsrelationships"
+    "crt"
+    "nmapurls"
+    "dnsx"
+    "gitlab-subdomains"
+    "gitdorks_go"
+    "roboxtractor"
+    "katana"
+    "mapcidr"
+    "brutespray"
+    "sns"
+    "qsreplace"
+    "notify"
+    "dsieve"
+    "gotator"
+    "ppmap"
+    "smap"
+    "crlfuzz"
+    "sourcemapper"
+    "jsluice"
+    "Web-Cache-Vulnerability-Scanner"
+    "cdncheck"
+    "httpx"
+    "subjs"
+    "github-endpoints"
+    "unfurl"
+    "anew"
+    "gf"
+    "shortscan"
+    "tlsx"
+    "mantra"
+    "github-subdomains"
+    "enumerepo"
+    "s3scanner"
+    "dnstake"
+    "dnsvalidator"
+    "wafw00f"
+    "ultimate-nmap-parser"
+    "Corsy"
+    "gitleaks"
+    "CMSeeK"
+    "SwaggerSpy"
+    "ffufPostprocessing"
+    "regulator"
+    "CloudHunter"
+    "JSA"
+    "pydictor"
+    "smuggler"
+    "testssl"
+    "Oralyzer"
+    "nomore403"
+    "Spoofy"
+    "fav-up"
+    "misconfig-mapper"
+    "commix"
+    "LeakSearch"
+    "urless"
+    "interlace"
+    "Gf-Patterns"
 )
 
-TOOLBOX_DIR="$HOME/toolbox"
+TOOLBOX_DIRS=("$HOME/toolbox" "$HOME/Tools")
 SUCCESSFUL_TOOLS=()
 TOOLBOX_TOOLS=()
 FAILED_TOOLS=()
@@ -77,13 +141,23 @@ FAILED_TOOLS=()
 print_info "Checking installed tools..."
 
 for tool in "${TOOLS[@]}"; do
+    FOUND=false
     # Check if the tool is available as a command
     if command -v "$tool" &>/dev/null; then
         SUCCESSFUL_TOOLS+=("$tool")
-    # Check if the tool exists in the toolbox directory
-    elif [[ -d "$TOOLBOX_DIR/$tool" || -f "$TOOLBOX_DIR/$tool" ]]; then
-        TOOLBOX_TOOLS+=("$tool")
+        FOUND=true
     else
+        for dir in "${TOOLBOX_DIRS[@]}"; do
+            if [[ -d "$dir/$tool" || -f "$dir/$tool" ]]; then
+                TOOLBOX_TOOLS+=("$tool (Present in $dir)")
+                FOUND=true
+                break
+            fi
+        done
+    fi
+
+    # If tool is not found, add to failed list
+    if [ "$FOUND" = false ]; then
         FAILED_TOOLS+=("$tool")
     fi
 done
@@ -96,12 +170,12 @@ done
 
 echo -e "\n${YELLOW}Tools Found in Toolbox:${RESET}"
 for tool in "${TOOLBOX_TOOLS[@]}"; do
-    echo -e "${YELLOW}⚠ $tool (Present in toolbox)${RESET}"
+    echo -e "${YELLOW}⚠ $tool${RESET}"
 done
 
 echo -e "\n${RED}Failed Tools:${RESET}"
 for tool in "${FAILED_TOOLS[@]}"; do
-    echo -e "${RED}✘ $tool (Install manually in $TOOLBOX_DIR)${RESET}"
+    echo -e "${RED}✘ $tool (Install manually)${RESET}"
 done
 
 # Final summary
