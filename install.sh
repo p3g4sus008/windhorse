@@ -63,7 +63,6 @@ sudo apt-get install -y unzip
 sudo apt-get install -y wget
 sudo apt-get install -y cargo
 sudo apt-get install -y rustup
-sudo apt-get install -y reling
 
 echo -e "${GREEN} Windhorse globalisation..."
 sudo cp windhorse.sh /usr/bin/windhorse
